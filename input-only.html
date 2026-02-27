@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Input Demo</title>
+    <link rel="stylesheet" href="./price-input-styles.css">
+    <style>
+        /* Центрирование страницы */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Контейнер для демонстрации */
+        .demo-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Заголовок */
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        /* Описание */
+        .demo-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        /* Контейнер для input */
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Label */
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+        }
+
+        /* Разделитель */
+        .separator {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        /* Кнопка */
+        .demo-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-top: 1rem;
+        }
+
+        .demo-button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .demo-button:active {
+            transform: translateY(0);
+        }
+
+        /* Результат */
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+            min-height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            }
+
+            .demo-container {
+                background: #1e293b;
+                color: #f8fafc;
+            }
+
+            .demo-title {
+                color: #f8fafc;
+            }
+
+            .demo-description {
+                color: #cbd5e1;
+            }
+
+            .input-label {
+                color: #e2e8f0;
+            }
+
+            .separator {
+                color: #94a3b8;
+            }
+
+            .result {
+                background: #334155;
+                color: #e2e8f0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .demo-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .input-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .separator {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="demo-title">Price Input Demo</h1>
+        <p class="demo-description">
+            Демонстрация стилизованного input для ввода цены с фильтром по диапазону
+        </p>
+
+        <div class="input-container">
+            <label class="input-label">Цена:</label>
+            <input 
+                type="number" 
+                placeholder="Min" 
+                class="price-input"
+                id="minPrice"
+            >
+            <span class="separator">-</span>
+            <input 
+                type="number" 
+                placeholder="Max" 
+                class="price-input"
+                id="maxPrice"
+            >
+        </div>
+
+        <button class="demo-button" onclick="applyFilter()">
+            Применить фильтр
+        </button>
+
+        <div class="result" id="result">
+            Выберите диапазон цен и нажмите "Применить"
+        </div>
+    </div>
+
+    <script>
+        function applyFilter() {
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const result = document.getElementById('result');
+
+            if (minPrice && maxPrice) {
+                result.innerHTML = `
+                    <strong>Фильтр применен:</strong><br>
+                    Минимальная цена: ${parseInt(minPrice).toLocaleString('ru-RU')} ₽<br>
+                    Максимальная цена: ${parseInt(maxPrice).toLocaleString('ru-RU')} ₽
+                `;
+            } else if (minPrice) {
+                result.innerHTML = `
+                    <strong>Фильтр применен:</strong><br>
+                    Минимальная цена: ${parseInt(minPrice).toLocaleString('ru-RU')} ₽<br>
+                    Максимальная цена: не указана
+                `;
+            } else if (maxPrice) {
+                result.innerHTML = `
+                    <strong>Фильтр применен:</strong><br>
+                    Минимальная цена: не указана<br>
+                    Максимальная цена: ${parseInt(maxPrice).toLocaleString('ru-RU')} ₽
+                `;
+            } else {
+                result.innerHTML = 'Выберите диапазон цен и нажмите "Применить"';
+            }
+        }
+
+        // Обработка Enter в input
+        document.getElementById('minPrice').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilter();
+            }
+        });
+
+        document.getElementById('maxPrice').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilter();
+            }
+        });
+
+        // Автоматическое применение при изменении
+        document.getElementById('minPrice').addEventListener('input', function() {
+            if (this.value && document.getElementById('maxPrice').value) {
+                applyFilter();
+            }
+        });
+
+        document.getElementById('maxPrice').addEventListener('input', function() {
+            if (this.value && document.getElementById('minPrice').value) {
+                applyFilter();
+            }
+        });
+    </script>
+</body>
+</html>

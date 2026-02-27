@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastElit - Платформа видео контента</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Дополнительные стили */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .price-input {
+            width: 6rem;
+        }
+        .price-input::-webkit-inner-spin-button,
+        .price-input::-webkit-outer-spin-button {
+            color: #4b5563;
+        }
+        .price-input::-webkit-inner-spin-button:hover,
+        .price-input::-webkit-outer-spin-button:hover {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Навигация -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">FastElit</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#products" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Продукты</a>
+                    <a href="#upload" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Загрузить</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Герой секция -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-4">Добро пожаловать в FastElit</h2>
+            <p class="text-xl mb-8">Платформа для загрузки и просмотра видео контента</p>
+            <div class="flex justify-center space-x-4">
+                <a href="#products" class="bg-white text-blue-600 px-6 py-3 rounded-md font-medium hover:bg-gray-100">Смотреть продукты</a>
+                <a href="#upload" class="border-2 border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white hover:text-blue-600">Загрузить видео</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Фильтры -->
+    <section class="bg-white py-8 border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center gap-4">
+                <!-- Поиск -->
+                <div class="flex-1 min-w-64">
+                    <input 
+                        type="text" 
+                        placeholder="Поиск продуктов..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <!-- Фильтр цен -->
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Цена:</label>
+                    <input 
+                        type="number" 
+                        placeholder="Min" 
+                        class="price-input px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                    <span class="text-gray-500">-</span>
+                    <input 
+                        type="number" 
+                        placeholder="Max" 
+                        class="price-input px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                </div>
+                
+                <!-- Кнопка фильтра -->
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Применить
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Продукты -->
+    <section id="products" class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8">Наши продукты</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Продукт 1 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                    <div class="aspect-video bg-gray-200">
+                        <video class="w-full h-full object-cover" controls>
+                            <source src="#" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">iPhone 15 Pro Max</h3>
+                        <p class="text-gray-600 text-sm mb-3">Мое видео</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-blue-600">120,000 ₽</span>
+                            <span class="text-sm text-gray-500">Продавец: testuser1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Продукт 2 -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+                    <div class="aspect-video bg-gray-200">
+                        <video class="w-full h-full object-cover" controls>
+                            <source src="#" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Defolt</h3>
+                        <p class="text-gray-600 text-sm mb-3">Описание продукта</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-2xl font-bold text-blue-600">260,000 ₽</span>
+                            <span class="text-sm text-gray-500">Продавец: testuser1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Добавьте больше продуктов здесь -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Загрузка -->
+    <section id="upload" class="bg-gray-100 py-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Загрузить новый продукт</h2>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <form class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Название продукта</label>
+                        <input 
+                            type="text" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите название продукта"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+                        <textarea 
+                            rows="4" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите описание продукта"
+                        ></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Цена</label>
+                        <input 
+                            type="number" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите цену"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Видео файл</label>
+                        <input 
+                            type="file" 
+                            accept="video/*"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button 
+                            type="submit" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            Загрузить продукт
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2024 FastElit. Все права защищены.</p>
+                <p class="mt-2 text-gray-400">Платформа для загрузки и просмотра видео контента</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Простая логика для фильтрации
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[placeholder="Поиск продуктов..."]');
+            const minPriceInput = document.querySelector('input[placeholder="Min"]');
+            const maxPriceInput = document.querySelector('input[placeholder="Max"]');
+            const filterButton = document.querySelector('button');
+            
+            filterButton.addEventListener('click', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const minPrice = parseFloat(minPriceInput.value) || 0;
+                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+                
+                console.log('Фильтр:', {
+                    search: searchTerm,
+                    minPrice: minPrice,
+                    maxPrice: maxPrice
+                });
+                
+                // Здесь можно добавить логику фильтрации продуктов
+                alert('Фильтры применены! Проверьте консоль.');
+            });
+        });
+    </script>
+</body>
+</html>

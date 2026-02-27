@@ -1,0 +1,94 @@
+/* Стили для input с ценой */
+.price-input {
+  /* Размеры */
+  width: 6rem; /* 96px */
+  
+  /* Отступы */
+  padding-left: 0.75rem; /* 12px */
+  padding-right: 0.75rem; /* 12px */
+  padding-top: 0.5rem; /* 8px */
+  padding-bottom: 0.5rem; /* 8px */
+  
+  /* Границы */
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem; /* 6px */
+  
+  /* Текст */
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+  
+  /* Фон */
+  background-color: #ffffff;
+  
+  /* Переходы */
+  transition: all 0.15s ease;
+}
+
+/* Стили при фокусе */
+.price-input:focus {
+  border-color: #155dfc; /* синий цвет */
+  outline: none;
+  box-shadow: 0 0 0 1px #155dfc; /* синее свечение */
+}
+
+/* Стили для placeholder */
+.price-input::placeholder {
+  color: #94a3b8; /* серый цвет */
+}
+
+/* Стили для стрелок в input (Chrome/Safari) */
+.price-input::-webkit-inner-spin-button,
+.price-input::-webkit-outer-spin-button {
+  opacity: 1;
+  height: 2rem;
+}
+
+/* Hover эффект */
+.price-input:hover {
+  border-color: #cbd5e1; /* более темный серый */
+}
+
+/* Disabled состояние */
+.price-input:disabled {
+  background-color: #f8fafc;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .price-input {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+  }
+  
+  .price-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+  }
+  
+  .price-input:hover {
+    border-color: #475569;
+  }
+  
+  .price-input::placeholder {
+    color: #64748b;
+  }
+  
+  .price-input:disabled {
+    background-color: #0f172a;
+    color: #64748b;
+  }
+}
+
+.price-input::-webkit-inner-spin-button,
+.price-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.price-input[type=number] {
+  -moz-appearance: textfield;
+}

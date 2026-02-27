@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastElit - Платформа видео контента</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Дополнительные стили */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .price-input {
+            width: 6rem;
+        }
+        .price-input::-webkit-inner-spin-button,
+        .price-input::-webkit-outer-spin-button {
+            color: #4b5563;
+        }
+        .price-input::-webkit-inner-spin-button:hover,
+        .price-input::-webkit-outer-spin-button:hover {
+            color: #3b82f6;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Навигация -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">FastElit</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#products" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Продукты</a>
+                    <a href="#upload" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">Загрузить</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главная секция -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold mb-4">Добро пожаловать в FastElit</h2>
+            <p class="text-xl mb-8">Платформа для загрузки и просмотра видео контента</p>
+            <div class="flex justify-center space-x-4">
+                <a href="#products" class="bg-white text-blue-600 px-6 py-3 rounded-md font-medium hover:bg-gray-100">Смотреть продукты</a>
+                <a href="#upload" class="border-2 border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white hover:text-blue-600">Загрузить видео</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Фильтры -->
+    <section class="bg-white py-8 border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-center gap-4">
+                <!-- Поиск -->
+                <div class="flex-1 min-w-64">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="Поиск продуктов..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <!-- Фильтр цен -->
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Цена:</label>
+                    <input 
+                        type="number" 
+                        id="minPrice"
+                        placeholder="Min" 
+                        class="price-input px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                    <span class="text-gray-500">-</span>
+                    <input 
+                        type="number" 
+                        id="maxPrice"
+                        placeholder="Max" 
+                        class="price-input px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                </div>
+                
+                <!-- Сортировка -->
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Сортировка:</label>
+                    <select id="sortSelect" class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <option value="newest">Новейшие</option>
+                        <option value="oldest">Старейшие</option>
+                        <option value="price-low">Цена: по возрастанию</option>
+                        <option value="price-high">Цена: по убыванию</option>
+                    </select>
+                </div>
+                
+                <!-- Кнопка фильтра -->
+                <button onclick="applyFilters()" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                    Применить
+                </button>
+                
+                <!-- Сброс -->
+                <button onclick="resetFilters()" class="bg-gray-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-600">
+                    Сбросить
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Продукты -->
+    <section id="products" class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Наши продукты</h2>
+                <div class="text-sm text-gray-600">
+                    <span id="productCount">Загрузка...</span> продуктов
+                </div>
+            </div>
+            
+            <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Загрузка -->
+                <div class="loading-skeleton rounded-lg h-64"></div>
+                <div class="loading-skeleton rounded-lg h-64"></div>
+                <div class="loading-skeleton rounded-lg h-64"></div>
+                <div class="loading-skeleton rounded-lg h-64"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Загрузка -->
+    <section id="upload" class="bg-gray-100 py-12">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Загрузить новый продукт</h2>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <form id="uploadForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Название продукта</label>
+                        <input 
+                            type="text" 
+                            id="productName"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите название продукта"
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
+                        <textarea 
+                            id="productDescription"
+                            rows="4" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите описание продукта"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Цена</label>
+                        <input 
+                            type="number" 
+                            id="productPrice"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Введите цену"
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Видео файл</label>
+                        <input 
+                            type="file" 
+                            id="productVideo"
+                            accept="video/*"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="flex justify-end space-x-4">
+                        <button 
+                            type="button"
+                            onclick="resetForm()"
+                            class="bg-gray-500 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        >
+                            Отмена
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            Загрузить продукт
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p>&copy; 2024 FastElit. Все права защищены.</p>
+                <p class="mt-2 text-gray-400">Платформа для загрузки и просмотра видео контента</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Мок данные продуктов
+        let allProducts = [
+            {
+                id: 1,
+                name: "iPhone 15 Pro Max",
+                description: "Мое видео",
+                price: 120000,
+                seller: "testuser1",
+                videoUrl: "#",
+                thumbnail: "https://via.placeholder.com/400x300/667eea/ffffff?text=iPhone+15+Pro+Max"
+            },
+            {
+                id: 2,
+                name: "Defolt",
+                description: "Описание продукта",
+                price: 260000,
+                seller: "testuser1",
+                videoUrl: "#",
+                thumbnail: "https://via.placeholder.com/400x300/764ba2/ffffff?text=Defolt"
+            },
+            {
+                id: 3,
+                name: "Defolt 2",
+                description: "Описание продукта",
+                price: 250000,
+                seller: "testuser1",
+                videoUrl: "#",
+                thumbnail: "https://via.placeholder.com/400x300/667eea/ffffff?text=Defolt+2"
+            },
+            {
+                id: 4,
+                name: "Defolt 3",
+                description: "Описание продукта",
+                price: 90000,
+                seller: "testuser1",
+                videoUrl: "#",
+                thumbnail: "https://via.placeholder.com/400x300/764ba2/ffffff?text=Defolt+3"
+            },
+            {
+                id: 5,
+                name: "Defolt 4",
+                description: "Описание продукта",
+                price: 45000,
+                seller: "testuser1",
+                videoUrl: "#",
+                thumbnail: "https://via.placeholder.com/400x300/667eea/ffffff?text=Defolt+4"
+            }
+        ];
+
+        let filteredProducts = [...allProducts];
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            updateProductCount();
+        });
+
+        // Рендер продуктов
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            filteredProducts.forEach(product => {
+                const productCard = createProductCard(product);
+                grid.appendChild(productCard);
+            });
+        }
+
+        // Создание карточки продукта
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden card-hover';
+            
+            card.innerHTML = `
+                <div class="video-container bg-gray-200">
+                    ${product.videoUrl !== '#' ? 
+                        `<video class="w-full h-full object-cover" controls>
+                            <source src="${product.videoUrl}" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>` :
+                        `<img src="${product.thumbnail}" alt="${product.name}" class="w-full h-full object-cover">`
+                    }
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${product.name}</h3>
+                    <p class="text-gray-600 text-sm mb-3">${product.description}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xl font-bold text-blue-600">${product.price.toLocaleString('ru-RU')} ₽</span>
+                        <span class="text-sm text-gray-500">Продавец: ${product.seller}</span>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Применение фильтров
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+            const sortBy = document.getElementById('sortSelect').value;
+
+            filteredProducts = allProducts.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) || 
+                                     product.description.toLowerCase().includes(searchTerm);
+                const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+                
+                return matchesSearch && matchesPrice;
+            });
+
+            // Сортировка
+            switch(sortBy) {
+                case 'newest':
+                    filteredProducts.reverse();
+                    break;
+                case 'oldest':
+                    // Уже в правильном порядке
+                    break;
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+            }
+
+            renderProducts();
+            updateProductCount();
+        }
+
+        // Сброс фильтров
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortSelect').value = 'newest';
+            
+            filteredProducts = [...allProducts];
+            renderProducts();
+            updateProductCount();
+        }
+
+        // Обновление счетчика продуктов
+        function updateProductCount() {
+            document.getElementById('productCount').textContent = filteredProducts.length;
+        }
+
+        // Сброс формы
+        function resetForm() {
+            document.getElementById('uploadForm').reset();
+        }
+
+        // Обработка формы загрузки
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('productName').value,
+                description: document.getElementById('productDescription').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                video: document.getElementById('productVideo').files[0]
+            };
+
+            console.log('Данные для загрузки:', formData);
+            alert('Функция загрузки будет доступна в полной версии сайта!');
+        });
+
+        // Применение фильтров при изменении
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('sortSelect').addEventListener('change', applyFilters);
+    </script>
+</body>
+</html>
