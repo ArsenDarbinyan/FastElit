@@ -98,18 +98,18 @@ module.exports = { addProduct, products };
 
 
 
-// docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "
-//   INSERT INTO products (title, description, price, videourl, previewurl, sellerid, createdat) 
-//   VALUES (
-//     'Defolt ',
-//     'description missing',
-//     260000,
-//     '/videos/IMG_0006.MP4',
-//     '/videos/IMG_0006_thumb.jpg',
-//     (SELECT id FROM users WHERE telegramid = '123456789'),
-//     NOW()
-//   );
-// "
+docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "
+  INSERT INTO products (title, description, price, videourl, previewurl, sellerid, createdat) 
+  VALUES (
+    'Defolt ',
+    'description missing',
+    1000,
+    '/videos/IMG_0002.mp4',
+    '/videos/IMG_0002_thumb.jpg',
+    (SELECT id FROM users WHERE telegramid = '123456789'),
+    NOW()
+  );
+"
 
 // docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "
 //   DELETE FROM products WHERE id = 5;
@@ -174,6 +174,10 @@ module.exports = { addProduct, products };
 
 
 
+
+docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM products;"
+
+
 // docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM _prisma_migrations;"
 
 // docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM referral_clicks;"
@@ -214,7 +218,7 @@ module.exports = { addProduct, products };
 //  public | visitors           | table | user
 
 
-//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "DELETE FROM referral_links WHERE id IN (1,2,3,4,5,6,7);"
+//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "DELETE FROM products WHERE id IN (4);"
 
  
 //  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "DELETE FROM referral_links WHERE id IN (1,2,3,4,5,6,7);"
@@ -225,16 +229,44 @@ module.exports = { addProduct, products };
 
 //  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM page_analytics;"
 
+// add user
+// docker exec fastelit-postgres-1 psql -U user -d fastelit -c "INSERT INTO users (telegramid, username, role) VALUES ('123456789', 'testuser', 'USER');"
 
+// docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM products;"
 
+// add products
 
+docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "
+  INSERT INTO products (title, description, price, videourl, previewurl, sellerid, createdat) 
+  VALUES (
+    'Defolt ',
+    'description missing',
+    1000,
+    '/videos/IMG_0002.mp4',
+    '/videos/IMG_0002_thumb.jpg',
+    (SELECT id FROM users WHERE telegramid = '123456789'),
+    NOW()
+  );
+"
 
+// add video
+// docker cp "C:\Users\User\Downloads\IMG_0002.MP4" fastelit-backend-1:/app/uploads/videos/IMG_0002.mp4
 
+// docker cp "C:/Users/User/Downloads/IMG_0006.MP4" fastelit-backend-1:/app/uploads/videos/IMG_0006.MP4
+// GET http://localhost/videos/test_video.mp4 404 (Not Found)
+
+// page_statistics   unique_visitors
+
+// 
+//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM visitors;"
+
+//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM page_statistics;"
 
 //  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM referral_links;"
 
+//delet link
 //  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "DELETE FROM referral_links  WHERE id = 3;"
-
+// add link 
 //  docker exec fastelit-postgres-1 psql -U user -d fastelit -c "INSERT INTO referral_links (code, name, description, created_by, created_at) VALUES ('new20', 'New4', 'Н', 1, CURRENT_TIMESTAMP);"
 
 

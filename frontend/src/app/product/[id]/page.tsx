@@ -90,7 +90,7 @@ export default function ProductDetail() {
                     <div className="overflow-hidden rounded-xl border border-border bg-black shadow-lg">
                         {product.videoUrl ? (
                             <video
-                                src={`${process.env.NEXT_PUBLIC_API_URL || ''}/api${product.videoUrl}`}
+                                src={`${product.videoUrl}?v=${Date.now()}`}
                                 className="w-full aspect-video"
                                 controls
                                 preload="metadata"

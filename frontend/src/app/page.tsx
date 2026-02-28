@@ -308,7 +308,7 @@ export default function Home() {
               <div className="aspect-video w-full overflow-hidden bg-accent relative">
                 {product.videoUrl ? (
                   <video
-                    src={`${process.env.NEXT_PUBLIC_API_URL || ''}/api${product.videoUrl}`}
+                    src={product.videoUrl}
                     className="h-full w-full object-cover"
                     preload="metadata"
                     onMouseOver={(e) => e.currentTarget.play()}

@@ -1,0 +1,14 @@
+# Команды для добавления нового продукта с видео
+
+# 1. Копировать видео в контейнер:
+docker cp "C:\Users\User\Downloads\IMG_0002.MP4" fastelit-backend-1:/app/uploads/videos/IMG_0002.mp4
+
+# 2. Запустить скрипт добавления продукта:
+cd c:/Users/User/visualStudioproject/FastElit/backend
+npx ts-node ../add-product-with-video.ts
+
+# 3. Проверить созданный продукт:
+docker exec fastelit-postgres-1 psql -U user -d fastelit -c "SELECT id, title, videourl FROM products ORDER BY id DESC LIMIT 3;"
+
+# 4. Проверить видео на сайте:
+# Открыть http://localhost/ и найти новый продукт
