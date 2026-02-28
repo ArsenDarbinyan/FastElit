@@ -31,3 +31,90 @@ model Product {
   createdAt   DateTime @default(now()) @map("createdat")
   @@map("products")
 }
+
+// Уникальные посетители
+model UniqueVisitor {
+  id               Int      @id @default(autoincrement())
+  visitorId        String   @unique @map("visitor_id")
+  firstVisit       DateTime @default(now()) @map("first_visit")
+  lastVisit        DateTime @default(now()) @map("last_visit")
+  ipAddress        String?  @map("ip_address")
+  userAgent        String?  @map("user_agent")
+  referrer         String?  @map("referrer")
+  referralCode     String?  @map("referral_code")
+  country          String?  @map("country")
+  city             String?  @map("city")
+  deviceType       String?  @map("device_type")
+  browser          String?  @map("browser")
+  os               String?  @map("os")
+  screenResolution String?  @map("screen_resolution")
+  language         String?  @map("language")
+  timezone         String?  @map("timezone")
+  isMobile         Boolean  @default(false) @map("is_mobile")
+  isTablet         Boolean  @default(false) @map("is_tablet")
+  isDesktop        Boolean  @default(false) @map("is_desktop")
+  totalVisits      Int      @default(1) @map("total_visits")
+  totalPageViews   Int      @default(1) @map("total_page_views")
+  totalTimeSpent   Int      @default(0) @map("total_time_spent")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  @@map("unique_visitors")
+}
+
+// Статистика страниц
+model PageStatistic {
+  id            Int      @id @default(autoincrement())
+  pagePath      String   @unique @map("page_path")
+  uniqueVisits  Int      @default(0) @map("unique_visits")
+  totalVisits   Int      @default(0) @map("total_visits")
+  lastVisit     DateTime? @map("last_visit")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  @@map("page_statistics")
+}
+
+// Реферальные ссылки
+model ReferralLink {
+  id             Int      @id @default(autoincrement())
+  code           String   @unique
+  name           String
+  description    String?
+  clickCount     Int      @default(0) @map("click_count")
+  uniqueVisitors Int      @default(0) @map("unique_visitors")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdBy      Int      @map("created_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  @@map("referral_links")
+}
+
+// Клики по реферальным ссылкам
+model ReferralClick {
+  id         Int      @id @default(autoincrement())
+  referralCode String  @map("referral_code")
+  ipAddress  String   @map("ip_address")
+  converted  Boolean  @default(false)
+  clickedAt  DateTime @default(now()) @map("clicked_at")
+  @@map("referral_clicks")
+}
+
+// Посетители (старая таблица)
+model Visitor {
+  id                   Int      @id @default(autoincrement())
+  ipAddress            String   @map("ip_address")
+  userAgent            String?  @map("user_agent")
+  refererUrl           String?  @map("referer_url")
+  utmSource            String?  @map("utm_source")
+  utmMedium            String?  @map("utm_medium")
+  utmCampaign          String?  @map("utm_campaign")
+  customReferralCode   String?  @map("custom_referral_code")
+  visitCount           Int      @default(1) @map("visit_count")
+  firstVisit           DateTime @default(now()) @map("first_visit")
+  lastVisit            DateTime @default(now()) @map("last_visit")
+  country              String?
+  city                 String?
+  deviceType           String?  @map("device_type")
+  browser              String?
+  os                   String?
+  currentUrl           String?  @map("current_url")
+  @@map("visitors")
+}

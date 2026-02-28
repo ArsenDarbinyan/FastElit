@@ -10,17 +10,19 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SeedController } from './seed/seed.controller';
 import { AdminController } from './admin/admin.controller';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { ReferralLinksModule } from './referral-links/referral-links.module';
 import { CorsMiddleware } from './cors.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
     AuthModule,
     UsersModule,
     FilesModule,
     ProductsModule,
-    PrismaModule,
     AnalyticsModule,
+    ReferralLinksModule,
   ],
   controllers: [AppController, SeedController, AdminController],
   providers: [AppService],

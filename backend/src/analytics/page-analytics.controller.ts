@@ -20,7 +20,7 @@ export class PageAnalyticsController {
 
       if (visitor && visitor.id) {
         // Отслеживаем просмотр страницы
-        const result = await this.analyticsService.trackPageView(body.pagePath, visitor.id);
+        const result = await this.analyticsService.trackPageView(req, body.pagePath);
         return { success: true, data: result };
       }
 

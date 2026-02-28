@@ -27,29 +27,26 @@ export default function ProductDetail() {
         // Отслеживаем просмотр страницы продукта
         const trackProductPageView = async () => {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const referralCode = urlParams.get('ref') || urlParams.get('referral');
+                const pagePath = window.location.pathname;
+                
+                console.log('📊 Отправляем аналитику страницы продукта:', pagePath);
 
-                const analyticsData = {
-                    pagePath: window.location.pathname,
-                    url: window.location.href,
-                    referrer: document.referrer,
-                    userAgent: navigator.userAgent,
-                    ref: referralCode
-                };
-
-                console.log('📊 Отправляем аналитику страницы продукта:', analyticsData);
-
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/analytics/page-view`, {
+                const response = await fetch('/api/analytics/track-page', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(analyticsData)
+                    body: JSON.stringify({
+                        pagePath: pagePath,
+                        pageUrl: window.location.href
+                    })
                 });
 
+                console.log('📡 Ответ от API страницы продукта:', response.status);
+
                 if (response.ok) {
-                    console.log('✅ Аналитика страницы продукта отправлена успешно');
+                    const result = await response.json();
+                    console.log('✅ Аналитика страницы продукта отправлена:', result);
                 } else {
                     console.error('❌ Ошибка отправки аналитики страницы продукта:', response.status);
                 }

@@ -194,6 +194,15 @@ module.exports = { addProduct, products };
 
 
 
+// for view visitors 
+
+//  docker exec fastelit-postgres-1 psql -U user -d fastelit -c "SELECT page_path, COUNT(DISTINCT visitor_id) as unique_v, SUM(view_count) as total_v FROM page_analytics GROUP BY page_path;"
+
+
+
+
+
+
 // http://localhost?ref=Enr0
 
 // public | _prisma_migrations | table | user
@@ -215,3 +224,22 @@ module.exports = { addProduct, products };
 // docker exec fastelit-postgres-1 psql -U user -d fastelit -c "SELECT page_path, COUNT(DISTINCT visitor_id) as unique_v, SUM(view_count) as total_v FROM page_analytics GROUP BY page_path;"
 
 //  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM page_analytics;"
+
+
+
+
+
+
+
+//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "SELECT * FROM referral_links;"
+
+//  docker exec -it fastelit-postgres-1 psql -U user -d fastelit -c "DELETE FROM referral_links  WHERE id = 3;"
+
+//  docker exec fastelit-postgres-1 psql -U user -d fastelit -c "INSERT INTO referral_links (code, name, description, created_by, created_at) VALUES ('new20', 'New4', 'Н', 1, CURRENT_TIMESTAMP);"
+
+
+// стать протеже опытному  фрилансеру
+
+// найти агентство которое регестрируется в рамкх  фриланс работ
+
+

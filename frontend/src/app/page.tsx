@@ -32,6 +32,34 @@ export default function Home() {
     console.log('🔄 Начинаю загрузку продуктов...');
     console.log('📡 URL запроса:', url);
 
+    // 🎯 РЕФЕРАЛЬНЫЕ ССЫЛКИ: Отслеживаем реф код сразу в начале
+    const trackReferralOnce = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode = urlParams.get('rf');
+        
+        if (referralCode) {
+          console.log('🔗 Отслеживаем реферальный код:', referralCode);
+          
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost'}/api/referral-links/track?rf=${referralCode}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Реферальная ссылка отслежена:', result);
+          } else {
+            console.error('❌ Ошибка отслеживания реф ссылки:', response.status);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Ошибка отслеживания реф ссылки:', error);
+      }
+    };
+
     fetch(url)
       .then((res) => {
         console.log('📥 Response status:', res.status);
@@ -51,21 +79,53 @@ export default function Home() {
         setLoading(false);
         console.log('✅ Загрузка завершена успешно');
 
+        // Отслеживаем реф ссылку только один раз
+        trackReferralOnce();
+
+        // 📊 АНАЛИТИКА: Отслеживаем посещение страницы
+        const trackPageAnalytics = async () => {
+          try {
+            const pagePath = window.location.pathname;
+            
+            console.log('📊 Начинаем отслеживание страницы:', pagePath);
+            
+            const response = await fetch('/api/analytics/track-page', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                pagePath: pagePath,
+                pageUrl: window.location.href
+              })
+            });
+
+            console.log('📡 Ответ от API:', response.status);
+
+            if (response.ok) {
+              const result = await response.json();
+              console.log('✅ Аналитика страницы отправлена:', result);
+            } else {
+              console.error('❌ Ошибка отправки аналитики страницы:', response.status);
+            }
+          } catch (error) {
+            console.error('❌ Ошибка аналитики страницы:', error);
+          }
+        };
+
+        trackPageAnalytics();
+
         // 🎯 АНАЛИТИКА: Отслеживаем посещение страницы
         const trackAnalytics = async () => {
           try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const referralCode = urlParams.get('ref') || urlParams.get('referral');
-
             const analyticsData = {
               url: window.location.href,
               referrer: document.referrer,
               userAgent: navigator.userAgent,
-              ref: referralCode
+              ref: null // Убираем реф код из общей аналитики
             };
 
             console.log('📊 Отправляем аналитику:', analyticsData);
-            console.log('🔗 Реферальный код:', referralCode);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/analytics/track`, {
               method: 'POST',
@@ -97,15 +157,12 @@ export default function Home() {
   // Функция отслеживания просмотра страницы
   const trackPageView = async () => {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const referralCode = urlParams.get('ref') || urlParams.get('referral');
-
       const analyticsData = {
         pagePath: window.location.pathname,
         url: window.location.href,
         referrer: document.referrer,
         userAgent: navigator.userAgent,
-        ref: referralCode
+        ref: null // Убираем реф код из аналитики страницы
       };
 
       console.log('📊 Отправляем аналитику страницы:', analyticsData);
@@ -131,15 +188,12 @@ export default function Home() {
   // Функция отслеживания клика по продукту
   const trackProductClick = async (productId: number) => {
     try {
-      const urlParams = new URLSearchParams(window.location.search);
-      const referralCode = urlParams.get('ref') || urlParams.get('referral');
-
       const analyticsData = {
         productId: productId,
         url: window.location.href,
         referrer: document.referrer,
         userAgent: navigator.userAgent,
-        ref: referralCode
+        ref: null // Убираем реф код из аналитики клика
       };
 
       console.log('📊 Отправляем аналитику клика по продукту:', analyticsData);
@@ -314,7 +368,7 @@ export default function Home() {
               : t('filter.no_products')
             }
           </p>
-          <Link href="/upload" className="mt-4 text-primary hover:underline">
+          <Link href="/upload" className="mt-2 text-primary hover:underline block">
             {t('nav.upload')}!
           </Link>
         </div>

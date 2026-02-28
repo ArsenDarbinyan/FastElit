@@ -29,8 +29,12 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 
+# Копируем миграции Prisma
+COPY --from=builder /app/prisma/migrations ./prisma/migrations
+
 USER nestjs
 
 EXPOSE 3001
 
-CMD ["node", "dist/src/main"]
+# Запускаем Prisma миграции при старте контейнера
+CMD ["sh", "-c", "if [ \"$DATABASE_URL\" != \"\" ]; then echo 'Applying Prisma migrations...' && npx prisma migrate deploy || echo 'Migrations may have been applied already'; fi && node dist/src/main"]

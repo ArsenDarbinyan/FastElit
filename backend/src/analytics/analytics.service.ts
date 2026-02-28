@@ -1,9 +1,174 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AnalyticsService {
   constructor(private prisma: PrismaService) {}
+
+  // Генерируем уникальный ID посетителя
+  generateVisitorId(req: Request): string {
+    const ip = req.ip || req.socket?.remoteAddress || '127.0.0.1';
+    const userAgent = req.get('User-Agent') || '';
+    const hash = require('crypto')
+      .createHash('md5')
+      .update(`${ip}-${userAgent}`)
+      .digest('hex');
+    
+    return hash.substring(0, 32);
+  }
+
+  // Получаем информацию об устройстве
+  getDeviceInfo(req: Request) {
+    const userAgent = req.get('User-Agent') || '';
+    
+    const isMobile = /Mobile|Android|iPhone|iPad/.test(userAgent);
+    const isTablet = /iPad|Tablet/.test(userAgent);
+    const isDesktop = !isMobile && !isTablet;
+    
+    let browser = 'Unknown';
+    if (userAgent.includes('Chrome')) browser = 'Chrome';
+    else if (userAgent.includes('Firefox')) browser = 'Firefox';
+    else if (userAgent.includes('Safari')) browser = 'Safari';
+    else if (userAgent.includes('Edge')) browser = 'Edge';
+    
+    let os = 'Unknown';
+    if (userAgent.includes('Windows')) os = 'Windows';
+    else if (userAgent.includes('Mac')) os = 'macOS';
+    else if (userAgent.includes('Linux')) os = 'Linux';
+    else if (userAgent.includes('Android')) os = 'Android';
+    else if (userAgent.includes('iOS')) os = 'iOS';
+    
+    return {
+      isMobile,
+      isTablet,
+      isDesktop,
+      browser,
+      os,
+      userAgent
+    };
+  }
+
+  // Основной метод отслеживания страницы
+  async trackPageView(req: Request, pagePath: string) {
+    const visitorId = this.generateVisitorId(req);
+    const deviceInfo = this.getDeviceInfo(req);
+    const ipAddress = req.ip || req.socket?.remoteAddress || '127.0.0.1';
+    const referrer = req.get('Referer') || null;
+    const referralCode = req.query.rf as string || null;
+    const pageUrl = req.get('Referer') || `http://localhost${pagePath}`;
+
+    try {
+      // 1. Проверяем есть ли посетитель
+      const existingVisitor = await this.prisma.$queryRaw<any[]>`
+        SELECT id, visit_count 
+        FROM visitors 
+        WHERE ip_address = ${ipAddress}
+        LIMIT 1
+      `;
+
+      const isNewVisitor = existingVisitor.length === 0;
+
+      if (isNewVisitor) {
+        // 2. Создаем нового посетителя в таблице visitors
+        await this.prisma.$queryRaw`
+          INSERT INTO visitors (
+            ip_address, user_agent, referer_url, 
+            custom_referral_code, device_type, browser, os,
+            country, city, current_url
+          ) VALUES (
+            ${ipAddress}, ${deviceInfo.userAgent}, ${referrer},
+            ${referralCode}, ${deviceInfo.isMobile ? 'mobile' : deviceInfo.isTablet ? 'tablet' : 'desktop'}, 
+            ${deviceInfo.browser}, ${deviceInfo.os},
+            'RU', 'Moscow', ${pageUrl}
+          )
+        `;
+      } else {
+        // 3. Обновляем существующего посетителя
+        await this.prisma.$queryRaw`
+          UPDATE visitors 
+          SET 
+            visit_count = visit_count + 1,
+            last_visit = CURRENT_TIMESTAMP,
+            current_url = ${pageUrl}
+          WHERE ip_address = ${ipAddress}
+        `;
+      }
+
+      // 3. Обновляем статистику страницы
+      const existingPage = await this.prisma.$queryRaw<any[]>`
+        SELECT id, unique_visits, total_visits 
+        FROM page_statistics 
+        WHERE page_path = ${pagePath}
+        LIMIT 1
+      `;
+
+      if (existingPage.length === 0) {
+        // Создаем запись для новой страницы
+        await this.prisma.$queryRaw`
+          INSERT INTO page_statistics (page_path, unique_visits, total_visits, last_visit, created_at, updated_at)
+          VALUES (${pagePath}, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `;
+      } else {
+        // Обновляем существующую страницу
+        await this.prisma.$queryRaw`
+          UPDATE page_statistics 
+          SET 
+            total_visits = total_visits + 1,
+            last_visit = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE page_path = ${pagePath}
+        `;
+      }
+
+      return {
+        success: true,
+        isNewVisitor,
+        visitorId,
+        pagePath
+      };
+
+    } catch (error) {
+      console.error('AnalyticsService error:', error);
+      throw error;
+    }
+  }
+
+  // Получение статистики по страницам
+  async getPageStatistics() {
+    return await this.prisma.$queryRaw<any[]>`
+      SELECT 
+        page_path,
+        unique_visits,
+        total_visits,
+        last_visit,
+        created_at
+      FROM page_statistics 
+      ORDER BY total_visits DESC
+    `;
+  }
+
+  // Получение уникальных посетителей
+  async getUniqueVisitors() {
+    return await this.prisma.$queryRaw<any[]>`
+      SELECT 
+        visitor_id,
+        first_visit,
+        last_visit,
+        ip_address,
+        device_type,
+        browser,
+        os,
+        country,
+        city,
+        total_visits,
+        total_page_views,
+        is_returning_visitor = (total_visits > 1)
+      FROM unique_visitors 
+      ORDER BY first_visit DESC
+      LIMIT 100
+    `;
+  }
 
   // Публичный доступ к prisma для других контроллеров
   // Получение статистики по всем страницам
@@ -106,25 +271,6 @@ export class AnalyticsService {
     ` as any[];
     
     return referrals;
-  }
-
-  async trackPageView(pagePath: string, visitorId: number) {
-    try {
-      const result = await this.prisma.$queryRaw`
-        INSERT INTO page_analytics (page_path, visitor_id, view_count, first_view, last_view)
-        VALUES (${pagePath}, ${visitorId}, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        ON CONFLICT (page_path, visitor_id) 
-        DO UPDATE SET 
-          view_count = page_analytics.view_count + 1,
-          last_view = CURRENT_TIMESTAMP
-        RETURNING *
-      ` as any[];
-      
-      return result[0];
-    } catch (error) {
-      console.error('Error tracking page view:', error);
-      throw error;
-    }
   }
 
   async getPageStats(pagePath?: string) {
